@@ -1,0 +1,14 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: false
+
+  Evoweb\EwConsole\:
+    resource: '../Classes/*'
+
+  Evoweb\EwConsole\Command\UpdateschemaCommand:
+    tags:
+      - name: 'console.command'
+        command: 'evoweb:updateschema'
+        schedulable: false

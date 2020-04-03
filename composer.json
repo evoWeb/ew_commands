@@ -1,0 +1,26 @@
+{
+	"name": "evoweb/ew-console",
+	"type": "typo3-cms-extension",
+	"description": "Commands needed in deployment",
+	"homepage": "https://www.evoweb.de/",
+	"version": "1.0.2",
+	"license": ["GPL-2.0-or-later"],
+	"authors": [{
+		"name": "Sebastian Fischer",
+		"email": "typo3@evoweb.de",
+		"role": "Developer"
+	}],
+	"require": {
+		"typo3/cms-core": "10.3.0"
+	},
+	"autoload": {
+		"psr-4": {
+			"Evoweb\\EwConsole\\": "Classes/"
+		}
+	},
+	"extra": {
+		"typo3/cms": {
+			"extension-key": "ew_console"
+		}
+	}
+}
