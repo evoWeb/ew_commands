@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Evoweb\EwConsole\Service\Database;
+namespace Evoweb\EwCommands\Service\Database;
 
 // Copied from helhum/typo3-console and modified to work with the ew_console
 
@@ -18,9 +18,9 @@ namespace Evoweb\EwConsole\Service\Database;
  *
  */
 
-use Evoweb\EwConsole\Database\Schema\SchemaUpdateInterface;
-use Evoweb\EwConsole\Database\Schema\SchemaUpdateResult;
-use Evoweb\EwConsole\Database\Schema\SchemaUpdateType;
+use Evoweb\EwCommands\Database\Schema\SchemaUpdateInterface;
+use Evoweb\EwCommands\Database\Schema\SchemaUpdateResult;
+use Evoweb\EwCommands\Database\Schema\SchemaUpdateType;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Extbase\SignalSlot\Dispatcher;
 

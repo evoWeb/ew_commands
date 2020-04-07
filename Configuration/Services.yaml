@@ -4,10 +4,10 @@ services:
     autoconfigure: true
     public: false
 
-  Evoweb\EwConsole\:
+  Evoweb\EwCommands\:
     resource: '../Classes/*'
 
-  Evoweb\EwConsole\Command\UpdateschemaCommand:
+  Evoweb\EwCommands\Command\UpdateschemaCommand:
     tags:
       - name: 'console.command'
         command: 'evoweb:updateschema'

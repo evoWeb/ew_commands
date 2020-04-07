@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Evoweb\EwConsole\Database\Schema;
+namespace Evoweb\EwCommands\Database\Schema;
 
 // Copied from helhum/typo3-console and modified to work with the ew_console
 

@@ -1,5 +1,5 @@
 {
-	"name": "evoweb/ew-console",
+	"name": "evoweb/ew-commands",
 	"type": "typo3-cms-extension",
 	"description": "Commands needed in deployment",
 	"homepage": "https://www.evoweb.de/",
@@ -15,12 +15,12 @@
 	},
 	"autoload": {
 		"psr-4": {
-			"Evoweb\\EwConsole\\": "Classes/"
+			"Evoweb\\EwCommands\\": "Classes/"
 		}
 	},
 	"extra": {
 		"typo3/cms": {
-			"extension-key": "ew_console"
+			"extension-key": "ew_commands"
 		}
 	}
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace Evoweb\EwConsole\Command;
+namespace Evoweb\EwCommands\Command;
 
 /*
  * This file is part of the evoweb console.
@@ -13,9 +13,9 @@ namespace Evoweb\EwConsole\Command;
  * LICENSE.txt file that was distributed with this source code.
  */
 
-use Evoweb\EwConsole\Database\Schema\SchemaUpdateResultRenderer;
-use Evoweb\EwConsole\Database\Schema\SchemaUpdateType;
-use Evoweb\EwConsole\Service\Database\SchemaService;
+use Evoweb\EwCommands\Database\Schema\SchemaUpdateResultRenderer;
+use Evoweb\EwCommands\Database\Schema\SchemaUpdateType;
+use Evoweb\EwCommands\Service\Database\SchemaService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
