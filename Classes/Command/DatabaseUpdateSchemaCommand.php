@@ -3,7 +3,7 @@
 namespace Evoweb\EwCommands\Command;
 
 /*
- * This file is part of the evoweb console.
+ * This file is part of the evoWeb commands.
  *
  * It is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License, either version 2
@@ -13,10 +13,10 @@ namespace Evoweb\EwCommands\Command;
  * LICENSE.txt file that was distributed with this source code.
  */
 
+use Evoweb\EwCommands\Database\Schema\SchemaUpdateResult;
 use Evoweb\EwCommands\Database\Schema\SchemaUpdateResultRenderer;
 use Evoweb\EwCommands\Database\Schema\SchemaUpdateType;
 use Evoweb\EwCommands\Service\Database\SchemaService;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -24,11 +24,11 @@ use TYPO3\CMS\Core\Type\Exception\InvalidEnumerationValueException;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 
-/**
- * CLI command for the 'scheduler' extension which executes
- */
-class UpdateschemaCommand extends Command
+class DatabaseUpdateSchemaCommand extends \Symfony\Component\Console\Command\Command
 {
+    /** @var ObjectManager */
+    protected $objectManager;
+
     /**
      * Configure the command by defining the name, options and arguments
      */
@@ -36,8 +36,36 @@ class UpdateschemaCommand extends Command
     {
         $this
             ->setDescription('Update the database schema.')
-            ->setHelp('If no parameter is given, the schema update executes in \'safe\' type.'
-                . ' Call it like this: typo3/sysext/core/bin/typo3 evoweb:updateschema --type="*.add,*.change"')
+            ->setHelp(
+                <<<'EOH'
+Compares the current database schema with schema definition
+from extensions's ext_tables.sql files and updates the schema based on the definition.
+
+Valid schema update types are:
+
+- field.add
+- field.change
+- field.prefix
+- field.drop
+- table.add
+- table.change
+- table.prefix
+- table.drop
+- safe (includes all necessary operations, to add or change fields or tables)
+- destructive (includes all operations which rename or drop fields or tables)
+
+The list of schema update types supports wildcards to specify multiple types, e.g.:
+
+- "<code>*</code>" (all updates)
+- "<code>field.*</code>" (all field updates)
+- "<code>*.add,*.change</code>" (all add/change updates)
+
+To avoid shell matching all types with wildcards should be quoted.
+
+<b>Example:</b>
+Call it like this: <code>%command.full_name% --type="*.add,*.change"</code>
+EOH
+            )
             ->addOption(
                 'type',
                 't',
@@ -55,7 +83,7 @@ class UpdateschemaCommand extends Command
     }
 
     /**
-     * Execute scheduler tasks
+     * Update schema
      *
      * @param InputInterface $input
      * @param OutputInterface $output
@@ -65,49 +93,59 @@ class UpdateschemaCommand extends Command
     public function execute(InputInterface $input, OutputInterface $output): int
     {
         /** @var ObjectManager $objectManager */
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        /** @var SchemaService $schemaService */
-        $schemaService = $objectManager->get(SchemaService::class);
-        /** @var SchemaUpdateResultRenderer $schemaUpdateResultRenderer */
-        $schemaUpdateResultRenderer = $objectManager->get(SchemaUpdateResultRenderer::class);
+        $this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
 
-        $verbose = $output->isVerbose();
         $schemaUpdateTypes = explode(',', $input->getOption('type'));
         $dryRun = $input->hasOption('dry-run') && $input->getOption('dry-run') != false;
 
         try {
-            $expandedSchemaUpdateTypes = SchemaUpdateType::expandSchemaUpdateTypes($schemaUpdateTypes);
+            $updateTypes = SchemaUpdateType::expandSchemaUpdateTypes($schemaUpdateTypes);
         } catch (InvalidEnumerationValueException $e) {
             $output->writeln(sprintf('<error>%s</error>', $e->getMessage()));
             return 1;
         }
 
-        $result = $schemaService->updateSchema($expandedSchemaUpdateTypes, $dryRun);
+        /** @var SchemaService $schemaService */
+        $schemaService = $this->objectManager->get(SchemaService::class);
+        $result = $schemaService->updateSchema($updateTypes, $dryRun);
+
+        $this->writeResult($output, $result, $updateTypes, $dryRun);
+
+        return $result->hasErrors() ? 1 : 0;
+    }
+
+    protected function writeResult(
+        OutputInterface $output,
+        SchemaUpdateResult $result,
+        array $updateTypes,
+        bool $dryRun
+    ) {
+        /** @var SchemaUpdateResultRenderer $renderer */
+        $renderer = $this->objectManager->get(SchemaUpdateResultRenderer::class);
+
+        $verbose = $output->isVerbose();
 
         if ($result->hasPerformedUpdates()) {
-            $output->writeln(
+            $output->writeln(vsprintf(
                 '<info>The following database schema updates %s performed:</info>',
                 [$dryRun ? 'should be' : 'were']
-            );
-            $schemaUpdateResultRenderer->render($result, $output, $verbose);
+            ));
+            $renderer->render($result, $output, $verbose);
         } else {
-            $output->writeln(
-                '<info>No schema updates %s performed for update type%s:%s</info>',
+            $output->writeln(vsprintf(
+                '<info>No schema updates %s performed for update %s:%s</info>',
                 [
                     $dryRun ? 'must be' : 'were',
-                    count($expandedSchemaUpdateTypes) > 1 ? 's' : '',
-                    PHP_EOL . '"' . implode('", "', $expandedSchemaUpdateTypes) . '"',
+                    count($updateTypes) > 1 ? 'types' : 'type',
+                    PHP_EOL . '"' . implode('", "', $updateTypes) . '"',
                 ]
-            );
+            ));
         }
 
         if ($result->hasErrors()) {
             $output->writeln('');
             $output->writeln('<error>The following errors occurred:</error>');
-            $schemaUpdateResultRenderer->renderErrors($result, $output, $verbose);
-            return 1;
+            $renderer->renderErrors($result, $output, $verbose);
         }
-
-        return 0;
     }
 }

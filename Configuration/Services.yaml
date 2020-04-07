@@ -7,8 +7,32 @@ services:
   Evoweb\EwCommands\:
     resource: '../Classes/*'
 
-  Evoweb\EwCommands\Command\UpdateschemaCommand:
+  Evoweb\EwCommands\Command\CacheFlushCommand:
     tags:
       - name: 'console.command'
-        command: 'evoweb:updateschema'
+        command: 'evoweb:cache:flush'
+        schedulable: false
+
+  Evoweb\EwCommands\Command\DatabaseExportCommand:
+    tags:
+      - name: 'console.command'
+        command: 'evoweb:database:export'
+        schedulable: false
+
+  Evoweb\EwCommands\Command\DatabaseImportCommand:
+    tags:
+      - name: 'console.command'
+        command: 'evoweb:database:import'
+        schedulable: false
+
+  Evoweb\EwCommands\Command\DatabaseUpdateSchemaCommand:
+    tags:
+      - name: 'console.command'
+        command: 'evoweb:database:updateschema'
+        schedulable: false
+
+  Evoweb\EwCommands\Command\FolderFixStructureCommand:
+    tags:
+      - name: 'console.command'
+        command: 'evoweb:folder:fixstructure'
         schedulable: false
