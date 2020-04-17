@@ -48,10 +48,10 @@ EOH
      */
     public function execute(InputInterface $input, OutputInterface $output): int
     {
-        /** @var DefaultFactory $folderStructureFactory */
-        $folderStructureFactory = GeneralUtility::makeInstance(DefaultFactory::class);
-        $structureFacade = $folderStructureFactory->getStructure();
         try {
+            /** @var DefaultFactory $folderStructureFactory */
+            $folderStructureFactory = GeneralUtility::makeInstance(DefaultFactory::class);
+            $structureFacade = $folderStructureFactory->getStructure();
             $fixedStatusObjects = $structureFacade->fix();
 
             if (empty($fixedStatusObjects->toArray())) {
