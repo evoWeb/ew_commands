@@ -51,15 +51,20 @@ EOH
         /** @var DefaultFactory $folderStructureFactory */
         $folderStructureFactory = GeneralUtility::makeInstance(DefaultFactory::class);
         $structureFacade = $folderStructureFactory->getStructure();
-        $fixedStatusObjects = $structureFacade->fix();
+        try {
+            $fixedStatusObjects = $structureFacade->fix();
 
-        if (empty($fixedStatusObjects->toArray())) {
-            $output->writeln('<info>No action were performed!</info>');
-        } else {
-            $output->writeln('<info>The following directory structure have been fixed!</info>');
-            foreach ($fixedStatusObjects as $fixedStatusObject) {
-                $output->writeln($fixedStatusObject->getTitle());
+            if (empty($fixedStatusObjects->toArray())) {
+                $output->writeln('<info>No action were performed!</info>');
+            } else {
+                $output->writeln('<info>The following directory structure have been fixed!</info>');
+                foreach ($fixedStatusObjects as $fixedStatusObject) {
+                    $output->writeln($fixedStatusObject->getTitle());
+                }
             }
+        } catch (\Exception $exception) {
+            $output->writeln('<error>Some error happened!</error>');
+            $output->writeln($exception->getMessage());
         }
 
         return 0;
