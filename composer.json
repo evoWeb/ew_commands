@@ -13,6 +13,9 @@
 	"require": {
 		"typo3/cms-core": "10.3.0"
 	},
+	"bin": [
+		"Resources/PHP/ewtypo3"
+	],
 	"autoload": {
 		"psr-4": {
 			"Evoweb\\EwCommands\\": "Classes/"
