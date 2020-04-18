@@ -1,6 +1,6 @@
 <?php
 
-namespace Ew\EwCommands\Core;
+namespace Evoweb\EwCommands\Core;
 
 /*
  * This file is part of the evoWeb commands.
@@ -13,13 +13,13 @@ namespace Ew\EwCommands\Core;
  * LICENSE.txt file that was distributed with this source code.
  */
 
-use Ew\EwCommands\Utility\ExtensionManagementUtility;
+use Evoweb\EwCommands\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
- * Extend to use Ew\EwCommands\Utility\ExtensionManagementUtility instead of core ExtensionManagementUtility
+ * Extend to use \Evoweb\EwCommands\Utility\ExtensionManagementUtility instead of core ExtensionManagementUtility
  */
 class Bootstrap extends \TYPO3\CMS\Core\Core\Bootstrap
 {

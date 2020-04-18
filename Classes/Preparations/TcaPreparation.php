@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ew\EwCommands\Preparations;
+namespace Evoweb\EwCommands\Preparations;
 
 /*
  * This file is part of the evoWeb commands.
@@ -16,9 +16,7 @@ namespace Ew\EwCommands\Preparations;
  */
 
 /**
- * Prepare TCA. Used in bootstrap and Flex Form Data Structures.
- *
- * @internal Class and API may change any time.
+ * Extend to quoteIdentifier without connect to database
  */
 class TcaPreparation extends \TYPO3\CMS\Core\Preparations\TcaPreparation
 {
@@ -128,10 +126,7 @@ class TcaPreparation extends \TYPO3\CMS\Core\Preparations\TcaPreparation
         return $c . str_replace($c, $c . $c, $str) . $c;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getIdentifierQuoteCharacter()
+    public function getIdentifierQuoteCharacter(): string
     {
         return '`';
     }

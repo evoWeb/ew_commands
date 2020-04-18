@@ -1,6 +1,6 @@
 <?php
 
-namespace Ew\EwCommands\Utility;
+namespace Evoweb\EwCommands\Utility;
 
 /*
  * This file is part of the evoWeb commands.
@@ -13,17 +13,14 @@ namespace Ew\EwCommands\Utility;
  * LICENSE.txt file that was distributed with this source code.
  */
 
-use Ew\EwCommands\Preparations\TcaPreparation;
+use Evoweb\EwCommands\Preparations\TcaPreparation;
 use Symfony\Component\Finder\Finder;
 use TYPO3\CMS\Core\Category\CategoryRegistry;
 use TYPO3\CMS\Core\Migrations\TcaMigration;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
- * Extension Management functions
- *
- * This class is never instantiated, rather the methods inside is called as functions like
- * \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('my_extension');
+ * Extend to use \Evoweb\EwCommands\Preparations\TcaPreparation instead of core TcaPreparation
  */
 class ExtensionManagementUtility extends \TYPO3\CMS\Core\Utility\ExtensionManagementUtility
 {
