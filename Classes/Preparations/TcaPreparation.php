@@ -15,11 +15,23 @@ namespace Evoweb\EwCommands\Preparations;
  * LICENSE.txt file that was distributed with this source code.
  */
 
+use TYPO3\CMS\Core\Database\ConnectionPool;
+
 /**
  * Extend to quoteIdentifier without connect to database
  */
 class TcaPreparation extends \TYPO3\CMS\Core\Preparations\TcaPreparation
 {
+    /**
+     * @var string
+     */
+    private static $quoteCharacter = '"';
+
+    /**
+     * @var array
+     */
+    private static $quoteCharacterCache = [];
+
     /**
      * Quote all table and field names in definitions known to possibly have quoted identifiers
      * like '{#tablename}.{#columnname}='
@@ -48,6 +60,7 @@ class TcaPreparation extends \TYPO3\CMS\Core\Preparations\TcaPreparation
                         $sqlQueryPartToPrepareQuotingIn = $columnConfig['config'][$value] ?? '';
                     }
                     if (mb_strpos($sqlQueryPartToPrepareQuotingIn, '{#') !== false) {
+                        $this->prepareQuoteCharacterForTable($table);
                         $quoted = self::quoteDatabaseIdentifiers(
                             $this,
                             $sqlQueryPartToPrepareQuotingIn
@@ -97,19 +110,23 @@ class TcaPreparation extends \TYPO3\CMS\Core\Preparations\TcaPreparation
      * you SHOULD use them. In general, they end up causing way more
      * problems than they solve.
      *
-     * @param string $str The identifier name to be quoted.
+     * @param string $identifier The identifier name to be quoted.
      *
      * @return string The quoted identifier string.
      */
-    public function quoteIdentifier($str)
+    public function quoteIdentifier($identifier)
     {
-        if (strpos($str, '.') !== false) {
-            $parts = array_map([$this, 'quoteSingleIdentifier'], explode('.', $str));
+        if ($identifier === '*') {
+            return $identifier;
+        }
+
+        if (strpos($identifier, '.') !== false) {
+            $parts = array_map([$this, 'quoteSingleIdentifier'], explode('.', $identifier));
 
             return implode('.', $parts);
         }
 
-        return $this->quoteSingleIdentifier($str);
+        return $this->quoteSingleIdentifier($identifier);
     }
 
     /**
@@ -128,6 +145,30 @@ class TcaPreparation extends \TYPO3\CMS\Core\Preparations\TcaPreparation
 
     public function getIdentifierQuoteCharacter(): string
     {
-        return '`';
+        return static::$quoteCharacter;
+    }
+
+    protected function prepareQuoteCharacterForTable(string $tableName)
+    {
+        if (!isset(static::$quoteCharacterCache[$tableName])) {
+            $connectionName = ConnectionPool::DEFAULT_CONNECTION_NAME;
+            if (!empty($GLOBALS['TYPO3_CONF_VARS']['DB']['TableMapping'][$tableName])) {
+                $connectionName = (string)$GLOBALS['TYPO3_CONF_VARS']['DB']['TableMapping'][$tableName];
+            }
+
+            $connectionParams = $GLOBALS['TYPO3_CONF_VARS']['DB']['Connections'][$connectionName] ?? [];
+            if (empty($connectionParams)) {
+                throw new \RuntimeException(
+                    'The requested database connection named "' . $connectionName . '" has not been configured.',
+                    1459422492
+                );
+            }
+
+            $character = in_array($connectionParams['driver'], ['mysqli', 'drizzle_pdo_mysql']) ? '`' : '"';
+        } else {
+            $character = static::$quoteCharacterCache[$tableName];
+        }
+
+        static::$quoteCharacter = $character;
     }
 }
