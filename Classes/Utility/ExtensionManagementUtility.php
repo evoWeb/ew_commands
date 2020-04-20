@@ -88,6 +88,11 @@ class ExtensionManagementUtility extends \TYPO3\CMS\Core\Utility\ExtensionManage
         $tcaPreparation = GeneralUtility::makeInstance(TcaPreparation::class);
         $GLOBALS['TCA'] = $tcaPreparation->prepare($GLOBALS['TCA']);
 
-        static::dispatchTcaIsBeingBuiltEvent($GLOBALS['TCA']);
+        if (\TYPO3\CMS\Core\Utility\VersionNumberUtility::convertVersionNumberToInteger(TYPO3_branch) < 10000000) {
+            // @todo remove once TYPO3 9.5.x support is dropped
+            static::emitTcaIsBeingBuiltSignal($GLOBALS['TCA']);
+        } else {
+            static::dispatchTcaIsBeingBuiltEvent($GLOBALS['TCA']);
+        }
     }
 }

@@ -24,19 +24,32 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 class Bootstrap extends \TYPO3\CMS\Core\Core\Bootstrap
 {
     /**
+     * @var \TYPO3\CMS\Core\Core\Bootstrap
+     */
+    protected static $instance;
+
+    /**
      * Load $TCA
      *
      * This will mainly set up $TCA through extMgm API.
      *
      * @param bool $allowCaching True, if loading TCA from cache is allowed
      * @param FrontendInterface $coreCache
+     * @return \TYPO3\CMS\Core\Core\Bootstrap|null
      * @internal This is not a public API method, do not use in own extensions
      */
     public static function loadBaseTca(bool $allowCaching = true, FrontendInterface $coreCache = null)
     {
         if ($allowCaching) {
-            $coreCache = $coreCache ?? GeneralUtility::makeInstance(CacheManager::class)->getCache('core');
+            if (\TYPO3\CMS\Core\Utility\VersionNumberUtility::convertVersionNumberToInteger(TYPO3_branch) < 10000000) {
+                // @todo remove once TYPO3 9.5.x support is dropped
+                $identifier = 'cache_core';
+            } else {
+                $identifier = 'core';
+            }
+            $coreCache = $coreCache ?? GeneralUtility::makeInstance(CacheManager::class)->getCache($identifier);
         }
         ExtensionManagementUtility::loadBaseTca($allowCaching, $coreCache);
+        return static::$instance;
     }
 }
